@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Smart Energy Insight</title>
+    <!-- Corrected CSS Path -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="nav-logo">⚡ Smart Energy Insight</a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link active">About</a></li>
+                <li class="nav-item"><a href="{{ url_for('model') }}" class="nav-link">Model</a></li>
+                <li class="nav-item"><a href="{{ url_for('visualization') }}" class="nav-link">Visualizations</a></li>
+                <li class="nav-item"><a href="{{ url_for('contact') }}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+                <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Register</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <h1 class="page-title">About the Project</h1>
+        <section class="content-section">
+            <h2>Problem Statement</h2>
+            <p>
+                In an increasingly energy-conscious world, understanding and predicting household energy consumption is crucial.
+                This project addresses the need for a data-driven approach to smart energy management by leveraging machine
+                learning to forecast usage patterns and identify key drivers of consumption.
+            </p>
+        </section>
+
+        <section class="content-section">
+            <h2>Dataset Description</h2>
+            <p>The analysis is based on the <strong>UK-DALE (UK Domestic Appliance-Level Electricity) dataset</strong>. This public dataset contains high-resolution energy consumption data from several homes in the UK.</p>
+            <ul>
+                <li><strong>Data Fields:</strong> Timestamp, aggregate energy usage (kWh), appliance-level usage (e.g., fridge, washing machine).</li>
+                <li><strong>Preprocessing:</strong> The raw data was cleaned to handle missing values, resampled from per-second to hourly intervals, and enriched with time-based features like hour of the day, day of the week, and seasonality indicators.</li>
+            </ul>
+        </section>
+
+        <section class="content-section">
+            <h2>Project Objective</h2>
+            <p>The core objective is to develop and compare machine learning models that can accurately predict short-term, household-level energy consumption. This involves analyzing historical trends to identify key factors influencing usage and providing a tool for visualizing these patterns.</p>
+            <h3 style="margin-top: 2rem;">Project Workflow</h3>
+            <img src="{{ url_for('serve_static_assets', filename='workflow.png') }}" alt="Project Workflow Diagram" class="workflow-img">
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Smart Energy Insight. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Corrected JS Path -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

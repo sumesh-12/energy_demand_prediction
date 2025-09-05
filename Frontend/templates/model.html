@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Models | Smart Energy Insight</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="nav-logo">⚡ Smart Energy Insight</a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="{{ url_for('model') }}" class="nav-link active">Model</a></li>
+                <li class="nav-item"><a href="{{ url_for('visualization') }}" class="nav-link">Visualizations</a></li>
+                <li class="nav-item"><a href="{{ url_for('contact') }}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+                <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Register</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <h1 class="page-title">Energy Consumption Prediction</h1>
+        <p class="page-subtitle">Enter a date to predict the day's peak energy load.</p>
+
+        <section class="content-section">
+            <h2>Live Prediction Input</h2>
+            <form id="predictionForm" class="contact-form">
+                <div class="form-group">
+                    <label for="day">Day of Month (1-31)</label>
+                    <input type="number" id="day" name="day" min="1" max="31" value="26" required>
+                </div>
+                <div class="form-group">
+                    <label for="month">Month (1-12)</label>
+                    <input type="number" id="month" name="month" min="1" max="12" value="8" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Predict Peak Load</button>
+            </form>
+            <div id="predictionResult" class="content-section" style="margin-top: 2rem; display: none; background-color: var(--light-bg);">
+                <h3>Prediction Result:</h3>
+                <p style="font-size: 1.5rem; color: var(--primary-color); font-weight: 600;"></p>
+                <button id="showChartBtn" class="btn btn-secondary" style="display: none; margin-top: 1rem;">Show Hourly Chart</button>
+            </div>
+            <div id="predictionChartContainer" class="chart-container" style="display: none; margin-top: 2rem;">
+                <h3>24-Hour Predicted Load (MWh)</h3>
+                <canvas id="predictionChart"></canvas>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>Model Information</h2>
+            <p>
+                This prediction is powered by N-BEATS Model. It analyzes the provided date to forecast the energy consumption for every hour of that day and identifies the hour with the highest predicted load.
+            </p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Smart Energy Insight. All Rights Reserved.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

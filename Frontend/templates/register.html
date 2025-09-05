@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Smart Energy Insight</title>
+    <!-- Corrected CSS Path -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="nav-logo">⚡ Smart Energy Insight</a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="{{ url_for('model') }}" class="nav-link">Model</a></li>
+                <li class="nav-item"><a href="{{ url_for('visualization') }}" class="nav-link">Visualizations</a></li>
+                <li class="nav-item"><a href="{{ url_for('contact') }}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+                <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link active">Register</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <div class="login-container">
+            <div class="login-card">
+                <h2>Register</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn-login">Register</button>
+                </form>
+                <p>Already have an account? <a href="{{ url_for('login') }}" class="register-link">Login here</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Smart Energy Insight. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Corrected JS Path -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

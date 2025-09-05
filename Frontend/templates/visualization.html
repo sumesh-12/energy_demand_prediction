@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizations | Smart Energy Insight</title>
+    <!-- Corrected CSS Path -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="nav-logo">⚡ Smart Energy Insight</a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="{{ url_for('model') }}" class="nav-link">Model</a></li>
+                <li class="nav-item"><a href="{{ url_for('visualization') }}" class="nav-link active">Visualizations</a></li>
+                <li class="nav-item"><a href="{{ url_for('contact') }}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+                <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Register</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <h1 class="page-title">Data Visualizations</h1>
+        <p class="page-subtitle">Interactive charts illustrating energy consumption patterns.</p>
+        
+        <div class="chart-controls">
+            <label for="date-range">Filter by Date Range:</label>
+            <input type="date" id="start-date">
+            <span>to</span>
+            <input type="date" id="end-date">
+            <button class="btn btn-secondary">Apply Filter</button>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-container">
+                <h3>Weekly Energy Usage Trend (kWh)</h3>
+                <canvas id="weeklyUsageChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Actual vs. Predicted Consumption</h3>
+                <canvas id="actualVsPredictedChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Appliance-wise Consumption</h3>
+                <canvas id="applianceChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Time-of-Day Usage Heatmap</h3>
+                <canvas id="heatmapChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Smart Energy Insight. All Rights Reserved.</p>
+    </footer>
+    <!-- Corrected JS Path -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

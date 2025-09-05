@@ -173,3 +173,9 @@ wheel==0.45.1
 wrapt==1.17.3
 xgboost==3.0.0
 yarl==1.20.1
+flask
+gunicorn
+tensorflow
+numpy
+pandas
+joblib

@@ -3,17 +3,13 @@ import sqlite3
 import numpy as np
 import pandas as pd
 import joblib
-from flask import Flask, render_template, url_for, send_from_directory, request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, request, jsonify
 from tensorflow.keras.models import load_model
 import datetime
 import traceback
 
 # --- APP SETUP ---
-app = Flask(__name__,
-            template_folder='../frontend/templates',
-            static_folder='../frontend/static'
-            )
+app = Flask(__name__)
 
 # --- DATABASE SETUP (SQLite) ---
 DATABASE_FILE = 'database.db'
@@ -57,58 +53,56 @@ try:
     print("Machine learning models loaded successfully!")
 except Exception as e:
     print(f"Error loading machine learning models: {e}")
-    prediction_model = None
-    features_scalers_dict = None
-    target_scaler = None
+    prediction_model, features_scalers_dict, target_scaler = None, None, None
 
 
-# --- ROUTING ---
+# --- ROUTES ---
 
-@app.route('/')
-@app.route('/home')
+@app.route("/")
 def home():
-    return render_template('index.html')
+    return {"message": "Backend is running!"}
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/model')
-def model():
-    return render_template('model.html')
+@app.route("/healthz")
+def healthz():
+    return {"ok": True}
 
 # --- PREDICTION ROUTE ---
-@app.route('/predict', methods=['POST'])
+@app.route("/predict", methods=["POST"])
 def predict():
     if not all([prediction_model, features_scalers_dict, target_scaler]):
         return jsonify({'success': False, 'error': 'Models not loaded'}), 500
 
     try:
         data = request.json
-        print(f"Received data for prediction: {data}")
+        if not data:
+            return jsonify({"error": "No input provided"}), 400
 
-        day = int(data['day'])
-        month = int(data['month'])
+        day = int(data.get("day"))
+        month = int(data.get("month"))
         year = datetime.datetime.now().year
 
         try:
             prediction_date = datetime.date(year, month, day)
         except ValueError:
-            return jsonify({'success': False, 'error': 'Invalid date provided.'}), 400
+            return jsonify({"success": False, "error": "Invalid date provided."}), 400
 
         dayofweek = prediction_date.weekday()
         is_weekend = 1 if dayofweek >= 5 else 0
         
+        # --- Simple placeholders ---
         seasonality_placeholders = {
-            1: {'temp': 5.0, 'load': 16000}, 2: {'temp': 6.0, 'load': 15800}, 3: {'temp': 9.0, 'load': 15500},
-            4: {'temp': 12.0, 'load': 15000}, 5: {'temp': 16.0, 'load': 14500}, 6: {'temp': 20.0, 'load': 14800},
-            7: {'temp': 25.0, 'load': 15000}, 8: {'temp': 24.0, 'load': 14900}, 9: {'temp': 19.0, 'load': 15200},
-            10: {'temp': 14.0, 'load': 15600}, 11: {'temp': 8.0, 'load': 15900}, 12: {'temp': 6.0, 'load': 16200}
+            1: {'temp': 5.0, 'load': 16000}, 2: {'temp': 6.0, 'load': 15800},
+            3: {'temp': 9.0, 'load': 15500}, 4: {'temp': 12.0, 'load': 15000},
+            5: {'temp': 16.0, 'load': 14500}, 6: {'temp': 20.0, 'load': 14800},
+            7: {'temp': 25.0, 'load': 15000}, 8: {'temp': 24.0, 'load': 14900},
+            9: {'temp': 19.0, 'load': 15200}, 10: {'temp': 14.0, 'load': 15600},
+            11: {'temp': 8.0, 'load': 15900}, 12: {'temp': 6.0, 'load': 16200}
         }
         
         monthly_placeholders = seasonality_placeholders.get(month, {'temp': 15.0, 'load': 15000})
         avg_temp, avg_load, avg_humidity, avg_wind = monthly_placeholders['temp'], monthly_placeholders['load'], 60.0, 10.0
 
+        # --- Features list ---
         feature_columns = [
             'temperature', 'humidity', 'wind_speed', 'is_weekend', 'is_holiday', 'hour', 
             'dayofweek', 'month', 'rolling_mean_24h', 'rolling_std_24h', 'rolling_mean_168h', 
@@ -138,17 +132,15 @@ def predict():
 
             input_df = pd.DataFrame([input_data], columns=feature_columns)
             
-            # --- FINAL FIX: Loop through dictionary of scalers ---
+            # scale using per-feature scalers
             scaled_df = input_df.copy()
             for col in input_df.columns:
                 if col in features_scalers_dict:
                     scaler = features_scalers_dict[col]
                     col_data = scaled_df[[col]].astype(float)
                     scaled_df[col] = scaler.transform(col_data)
-            # --- END OF FIX ---
-            
+
             scaled_features = scaled_df.values
-            
             sequence_length = 168
             reshaped_features = np.tile(scaled_features, (sequence_length, 1))
             reshaped_features = reshaped_features.reshape(1, sequence_length, scaled_features.shape[1])
@@ -160,89 +152,20 @@ def predict():
 
         peak_load = max(predictions_for_day)
         peak_hour = predictions_for_day.index(peak_load)
-        
-        peak_load_py = float(peak_load)
-        hourly_data_py = [float(p) for p in predictions_for_day]
 
         return jsonify({
-            'success': True, 
-            'prediction': f'Predicted Peak Load: {peak_load_py:.2f} MWh at hour {peak_hour}:00',
-            'hourly_data': hourly_data_py
+            'success': True,
+            'peak_load': float(peak_load),
+            'peak_hour': peak_hour,
+            'hourly_data': [float(p) for p in predictions_for_day]
         })
 
     except Exception as e:
-        print(f"An error occurred during prediction: {e}")
+        print(f"Error during prediction: {e}")
         traceback.print_exc()
-        return jsonify({'success': False, 'error': 'Failed to make prediction. Check server console for details.'}), 500
+        return jsonify({'success': False, 'error': 'Prediction failed'}), 500
 
-# (The rest of your routes remain the same)
-@app.route('/visualization')
-def visualization():
-    return render_template('visualization.html')
 
-@app.route('/contact', methods=['GET', 'POST'])
-def contact():
-    if request.method == 'POST':
-        try:
-            name = request.form.get('name')
-            email = request.form.get('email')
-            message = request.form.get('message')
-            conn = get_db_connection()
-            conn.execute('INSERT INTO contacts (name, email, message) VALUES (?, ?, ?)', (name, email, message))
-            conn.commit()
-            conn.close()
-            return jsonify({"success": True, "message": "Your message has been sent successfully!"})
-        except Exception as e:
-            return jsonify({"success": False, "message": "An internal error occurred."}), 500
-    return render_template('contact.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        try:
-            username = request.form.get('username')
-            password = request.form.get('password')
-            conn = get_db_connection()
-            user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
-            conn.close()
-            if user and check_password_hash(user['password'], password):
-                return jsonify({"success": True, "message": f"Welcome back, {username}!"})
-            else:
-                return jsonify({"success": False, "message": "Invalid username or password."}), 401
-        except Exception as e:
-            return jsonify({"success": False, "message": "An internal error occurred."}), 500
-    return render_template('login.html')
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        try:
-            username = request.form.get('username')
-            password = request.form.get('password')
-            conn = get_db_connection()
-            existing_user = conn.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()
-            if existing_user:
-                conn.close()
-                return jsonify({"success": False, "message": "Username already exists."}), 409
-            hashed_password = generate_password_hash(password)
-            conn.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
-            conn.commit()
-            conn.close()
-            return jsonify({"success": True, "message": "Account created successfully!"})
-        except Exception as e:
-            return jsonify({"success": False, "message": "An internal error occurred."}), 500
-    return render_template('register.html')
-
-@app.route('/assets/<path:filename>')
-def serve_static_assets(filename):
-    assets_dir = os.path.join(app.root_path, 'assets')
-    return send_from_directory(assets_dir, filename)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     init_db()
-    app.run(debug=True, port=5000)
-
-@app.route("/healthz")
-def healthz():
-    return {"ok": True}
-
+    app.run(host="0.0.0.0", port=5000, debug=True)
